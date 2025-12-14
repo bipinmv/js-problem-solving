@@ -11,24 +11,26 @@ const customPromiseAllSettled = promises => {
       return resolve(result);
     }
 
-    promises.forEach(async (promise, index) => {
-      try {
-        const value = await promise;
-        result[index] = {
-          status: 'fulfilled',
-          value
-        };
-      } catch (reason) {
-        result[index] = {
-          status: 'rejected',
-          reason
-        };
-      } finally {
-        pending--;
-        if (pending === 0) {
-          resolve(result);
-        }
-      }
+    promises.forEach((p, index) => {
+      Promise.resolve(p)
+        .then(value => {
+          result[index] = {
+            status: 'fulfilled',
+            value
+          };
+        })
+        .catch(reason => {
+          result[index] = {
+            status: 'rejected',
+            reason
+          };
+        })
+        .finally(() => {
+          pending--;
+          if (pending === 0) {
+            resolve(result);
+          }
+        });
     });
   });
 };
@@ -42,5 +44,3 @@ const promises = [promise1, promise2, promise3];
 customPromiseAllSettled(promises).then(results => {
   console.log(results);
 });
-
-
