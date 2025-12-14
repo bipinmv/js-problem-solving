@@ -8,21 +8,22 @@ const customPromiseAll = promises => {
     let pending = promises.length;
 
     if (pending === 0) {
-      resolve(result);
+      return resolve(result);
     }
 
-    promises.forEach(async (promise, index) => {
-      try {
-        const value = await promise;
-        result[index] = value;
-        pending--;
+    promises.forEach((promise, index) => {
+      Promise.resolve(promise)
+        .then(value => {
+          result[index] = value;
+          pending--;
 
-        if (pending === 0) {
-          resolve(result);
-        }
-      } catch (e) {
-        reject(e);
-      }
+          if (pending === 0) {
+            resolve(result);
+          }
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   });
 };
@@ -41,4 +42,3 @@ customPromiseAll(promises)
   .catch(err => {
     console.error('Rejected:', err.message);
   });
-
