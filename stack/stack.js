@@ -11,7 +11,7 @@ class Stack {
 		if (this.isEmpty()) {
 			return;
 		}
-		this.items.pop();
+		return this.items.pop();
 	}
 
 	peek() {
